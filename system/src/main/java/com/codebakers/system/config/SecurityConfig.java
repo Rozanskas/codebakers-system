@@ -54,14 +54,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.logout().logoutSuccessUrl("/api/auth/successlogout").and().cors().and().csrf().disable()
-				.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
+		http
+		.logout().logoutSuccessUrl("/api/auth/successlogout")
+		.and().cors()
+		  .and().csrf().disable()
+		    .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
+			  .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			  .and().authorizeRequests()
 				.antMatchers("/", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html",
-						"/**/*.css", "/**/*.js")
-				.permitAll().antMatchers("/**").permitAll()
-				.antMatchers("/api/user/checkUsernameAvailability", "/api/user/checkEmailAvailability").permitAll()
-				.antMatchers(HttpMethod.GET, "/api/polls/**", "/api/users/**").permitAll().anyRequest().authenticated();
+						"/**/*.css", "/**/*.js").permitAll()
+				.antMatchers("/**").permitAll()
+				  .antMatchers("/api/admin/**").hasRole("ADMIN")
+				     .anyRequest().authenticated();
 
 		// Add our custom JWT security filter
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
